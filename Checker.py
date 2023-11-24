@@ -52,32 +52,46 @@ danger_html="""
 """
 st.markdown(html_temp, unsafe_allow_html=True)
 
-username = st.text_input(label="Enter the username of the account you want to check", placeholder="Type here")
+username = st.text_input(label="Enter the username of the account you want to check", placeholder="Type here", key=1)
+statuses_count= st.text_input(label="Enter the stasuses count of the account", placeholder="Type here", key=2)
+followers_count= st.text_input(label="Enter the followers count of the account", placeholder="Type here", key=3)
+friends_count= st.text_input(label="Enter the friends count of the account", placeholder="Type here", key = 4)
+favourites_count = st.text_input(label="Enter the favourites count of the account", placeholder="Type here", key=5)
+listed_count = st.text_input(label="Enter the listed count of the account", placeholder="Type here",key=6)
+default_profile = st.text_input(label="Does the user have a default Profile", placeholder="Type here",key=7)
+profile_sidebar_border_color = st.text_input(label="Does the user have default sidebar border color", placeholder="Type here",key=8)
+profile_background_tile = st.text_input(label="Does the user have default background tile", placeholder="Type here",key=9)
+profile_sidebar_fill_color = st.text_input(label="Does the user have default profile sidebar fill color", placeholder="Type here",key=10)
+description = st.text_input(label="Does the user have an account description", placeholder="Type here",key=11)
 
 if st.button("Predict"):
-    if username[0] == "@":
-        username = username[1:]
-    if "https://twitter.com/" in username:
-        username = username[20:]
-    elif"twitter.com/" in username:
-        username = username[12:]
-    username = username.lower()
-    ref = db.reference("/")
-    stored_rec = ref.get()
-    try:
-        data = data_fetch(username)
-    except tweepy.NotFound:
-        st.markdown("The account you are looking for does not exist, please check the Username entered.")
-        st.stop()
-    except tweepy.Forbidden as e:
-        st.markdown("The account you are looking for has been suspended for violating [X Rules](https://support.twitter.com/articles/18311), please check the Username entered.")
-        # ref = db.reference(f"/{username}")
-        # ref.set("Suspended")
-        output = "Suspended"
-        st.stop()
-    except tweepy.Unauthorized:
-        st.markdown("We are facing a technical issue, please try again later or submit an issue on the GitHub page")
-        st.stop()
+    # if username[0] == "@":
+    #     username = username[1:]
+    # if "https://twitter.com/" in username:
+    #     username = username[20:]
+    # elif"twitter.com/" in username:
+    #     username = username[12:]
+    # username = username.lower()
+    # ref = db.reference("/")
+    # stored_rec = ref.get()
+    # try:
+    #     data = data_fetch(username)
+    # except tweepy.NotFound:
+    #     st.markdown("The account you are looking for does not exist, please check the Username entered.")
+    #     st.stop()
+    # except tweepy.Forbidden as e:
+    #     st.markdown("The account you are looking for has been suspended for violating [X Rules](https://support.twitter.com/articles/18311), please check the Username entered.")
+    #     # ref = db.reference(f"/{username}")
+    #     # ref.set("Suspended")
+    #     output = "Suspended"
+    #     st.stop()
+    # except tweepy.Unauthorized:
+    #     st.markdown("We are facing a technical issue, please try again later or submit an issue on the GitHub page")
+    #     st.stop()
+    data = [statuses_count, followers_count, friends_count, favourites_count,listed_count,default_profile ,profile_sidebar_border_color
+                                ,profile_background_tile,profile_sidebar_fill_color,description]
+    data = np.array(data)
+    data = data.astype(np.int64)
     output=pred(data)
     ref = db.reference(f"/{username}")
     if output == True :ref.set("Real")
